@@ -1,5 +1,19 @@
 <?php
 
+Route::get('itunes', function()
+{
+  $itunes = new \Itp\Api\ItunesSearch();
+  $json = $itunes->getResults();
+
+//  dd($json);
+
+  return View::make('itunes', [
+    'songs' => $json->results
+  ]);
+
+});
+
+
 Route::get('songs/create', function()
 {
   $genres = Genre::all();
@@ -13,15 +27,28 @@ Route::get('songs/create', function()
 
 Route::post('songs', function()
 {
-  $song = new Song();
-  $song->title = Input::get('title');
-  $song->artist_id = Input::get('artist');
-  $song->genre_id = Input::get('genre');
-  $song->price = Input::get('price');
-  $song->save();
+//  dd(Input::all());
+  $validation = Song::validate(Input::all());
+
+  if ($validation->passes()) {
+    $song = new Song();
+    $song->title = Input::get('title');
+    $song->artist_id = Input::get('artist');
+    $song->genre_id = Input::get('genre');
+    $song->price = Input::get('price');
+    $song->save();
+
+    return Redirect::to('songs/create')
+      ->with('success', 'Yay!');
+  }
 
   return Redirect::to('songs/create')
-    ->with('success', 'Yay!');
+    ->withInput()
+//    ->withErrors($validation);
+    ->with('errors', $validation->messages());
+
+
+
 });
 
 
