@@ -1,5 +1,12 @@
 <?php
 
+
+Route::get('/','YelpController@listRestaurants');
+
+Route::get('restaurants/{id}/reviews', 'YelpController@getReviews');
+
+
+
 Route::get('itunes', function()
 {
   $itunes = new \Itp\Api\ItunesSearch();
